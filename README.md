@@ -16,7 +16,7 @@
 
 ```
 AppleMusicMigrator/
-├── music_searcher.pyw    # 主程序
+├── music_searcher.py     # 主程序
 ├── assets/               # 图像识别资源
 │   ├── add_to_playlist.png
 │   ├── best_result.png
@@ -41,13 +41,13 @@ AppleMusicMigrator/
 ### 安装依赖
 
 ```bash
-pip install pandas pyautogui pyperclip pillow pyside6 pywin32 numpy
+pip install pandas pyautogui pyperclip pillow pyside6 pywin32 numpy opencv-python
 ```
 
 ### 运行程序
 
 ```bash
-python music_searcher.pyw
+python music_searcher.py
 ```
 
 ### 配置说明

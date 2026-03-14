@@ -25,15 +25,19 @@ import numpy as np
 class AppConfig:
     """应用程序配置 - 集中管理所有常量"""
     VERSION = "v1.0"
-    EXCEL_PATH = os.path.join("data", "歌单.xlsx")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+    DATA_DIR = os.path.join(BASE_DIR, "data")
+    FONTS_DIR = os.path.join(BASE_DIR, "fonts")
+    EXCEL_PATH = os.path.join(DATA_DIR, "歌单.xlsx")
     
     # 图像资源路径
-    IMG_ADD_TO_PLAYLIST = os.path.join("assets", "add_to_playlist.png")
-    IMG_TARGET_PLAYLIST = os.path.join("assets", "target_playlist.png")
-    IMG_SONG_TITLE = os.path.join("assets", "song_title_landmark.png")
-    IMG_MORE_OPTIONS = os.path.join("assets", "more_options.png")
-    IMG_BEST_RESULT = os.path.join("assets", "best_result.png")
-    IMG_SKIP_DUPLICATE = os.path.join("assets", "skip_duplicate.png")
+    IMG_ADD_TO_PLAYLIST = os.path.join(ASSETS_DIR, "add_to_playlist.png")
+    IMG_TARGET_PLAYLIST = os.path.join(ASSETS_DIR, "target_playlist.png")
+    IMG_SONG_TITLE = os.path.join(ASSETS_DIR, "song_title_landmark.png")
+    IMG_MORE_OPTIONS = os.path.join(ASSETS_DIR, "more_options.png")
+    IMG_BEST_RESULT = os.path.join(ASSETS_DIR, "best_result.png")
+    IMG_SKIP_DUPLICATE = os.path.join(ASSETS_DIR, "skip_duplicate.png")
     
     # 图像识别配置
     IMAGE_CONFIDENCE = 0.8
@@ -43,15 +47,14 @@ class AppConfig:
     UI_WIDTH = 300
     UI_MIN_HEIGHT = 300
     PIXEL_FONTS = ["Zpix", "Press Start 2P", "Pixel Operator", "Fixedsys", "Terminal", "Consolas", "Courier New"]
-    
-<<<<<<< HEAD
-=======
+
     # 预览窗口配置
     PREVIEW_LINE_WIDTH = 3
     PREVIEW_CORNER_LENGTH = 20
     PREVIEW_FILL_ALPHA = 50  # 0-255
-    
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+
+    FONT_ZPIX = os.path.join(FONTS_DIR, "最像素 Zpix.ttf")
+
     # 颜色主题 (Nord-like 低饱和度复古灰色系)
     COLOR_BG = "#2B2B2B"
     COLOR_PANEL = "#3C3F41"
@@ -148,24 +151,17 @@ class MouseHookManager:
                 # 允许注入的事件（自动化）
                 if struct.flags & LLMHF_INJECTED:
                     return self._user32.CallNextHookEx(self._hook_id, nCode, wParam, lParam)
-                
-<<<<<<< HEAD
-=======
+
                 # 右键按下时即时停止任务
                 if wParam == WM_RBUTTONDOWN:
                     self.stop_event.set()
                     return self._user32.CallNextHookEx(self._hook_id, nCode, wParam, lParam)
-                
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+
                 # 阻止物理鼠标输入
                 if not self.paused.is_set() and self.blocking_enabled.is_set():
                     if self.allow_clicks.is_set() and (wParam == 0x0201 or wParam == 0x0202):
                         return self._user32.CallNextHookEx(self._hook_id, nCode, wParam, lParam)
-<<<<<<< HEAD
-                    if wParam == WM_RBUTTONDOWN or wParam == WM_RBUTTONUP:
-=======
                     if wParam == WM_RBUTTONUP:
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                         return self._user32.CallNextHookEx(self._hook_id, nCode, wParam, lParam)
                     return 1
             except:
@@ -204,12 +200,7 @@ class MouseHookManager:
 
     def _esc_poll_loop_blocking(self):
         while not self.stop_event.is_set():
-<<<<<<< HEAD
-            if (self._user32.GetAsyncKeyState(0x1B) & 0x8000) or \
-               (self._user32.GetAsyncKeyState(0x02) & 0x8000):
-=======
             if self._user32.GetAsyncKeyState(0x1B) & 0x8000:
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                 self.stop_event.set()
                 break
             time.sleep(0.05)
@@ -643,8 +634,6 @@ class ScreenSnipper(QtWidgets.QDialog):
             painter.drawRect(rect)
 
 
-<<<<<<< HEAD
-=======
 class TargetPreviewWindow(QtWidgets.QWidget):
     """
     目标定位预览窗口
@@ -762,8 +751,6 @@ class TargetPreviewWindow(QtWidgets.QWidget):
                 painter.drawText(text_rect, QtCore.Qt.AlignLeft, self.target_label)
 
 
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
-
 
 class MusicSearcherApp(QtWidgets.QWidget):
     """主应用程序类"""
@@ -802,10 +789,7 @@ class MusicSearcherApp(QtWidgets.QWidget):
         self.countdown_flags = {}
         self.cycle_start_time = 0
         self.last_cycle_duration = 0
-<<<<<<< HEAD
-=======
         self.preview_window = TargetPreviewWindow(self)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
         self.ui_callback.connect(self._run_ui_callback)
         self.setup_styles()
         self.setup_ui()
@@ -836,7 +820,7 @@ class MusicSearcherApp(QtWidgets.QWidget):
         widget.setGraphicsEffect(shadow)
 
     def setup_styles(self):
-        font_id = QtGui.QFontDatabase.addApplicationFont(os.path.join("fonts", "最像素 Zpix.ttf"))
+        font_id = QtGui.QFontDatabase.addApplicationFont(AppConfig.FONT_ZPIX)
         font_family = QtGui.QFontDatabase.applicationFontFamilies(font_id)[0] if font_id != -1 else \
                      next((f for f in AppConfig.PIXEL_FONTS if f in QtGui.QFontDatabase().families()), "Consolas")
         self.font_base = QtGui.QFont(font_family, 10)
@@ -1514,18 +1498,11 @@ class MusicSearcherApp(QtWidgets.QWidget):
             print(f"Screenshot failed: {e}")
             return None, 0, 0
 
-<<<<<<< HEAD
-    def _smart_locate_image(self, image_path, confidence=0.8, region=None, use_cache=True):
-        """
-        优化的图像定位方法
-        优先使用 OpenCV，支持区域搜索和缓存
-=======
     def _smart_locate_image(self, image_path, confidence=0.8, region=None, use_cache=True, show_preview=False):
         """
         优化的图像定位方法
         优先使用 OpenCV，支持区域搜索和缓存
         :param show_preview: 是否显示预览窗口
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
         """
         # 尝试使用缓存
         if use_cache and image_path in self.location_cache:
@@ -1537,11 +1514,9 @@ class MusicSearcherApp(QtWidgets.QWidget):
                     if box:
                         center_x = box.left + box.width / 2
                         center_y = box.top + box.height / 2
-<<<<<<< HEAD
-=======
+                        self._cache_region(image_path, box.left, box.top, box.width, box.height)
                         if show_preview:
                             self._update_preview_box(box, image_path)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                         return QtCore.QPoint(int(center_x), int(center_y))
             except:
                 pass
@@ -1549,11 +1524,8 @@ class MusicSearcherApp(QtWidgets.QWidget):
         # 截图 - 获取整个屏幕
         haystack_img, screen_left, screen_top = self._grab_full_image()
         if haystack_img is None:
-<<<<<<< HEAD
-=======
             if show_preview:
                 self.preview_window.clear_target()
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
             return None
         
         # 调试输出：屏幕信息
@@ -1585,8 +1557,6 @@ class MusicSearcherApp(QtWidgets.QWidget):
                 except:
                     pass
         
-<<<<<<< HEAD
-=======
         # 获取模板图像尺寸用于绘制矩形框
         tpl_width, tpl_height = 40, 40
         if os.path.exists(image_path):
@@ -1595,8 +1565,7 @@ class MusicSearcherApp(QtWidgets.QWidget):
                     tpl_width, tpl_height = img.size
             except:
                 pass
-        
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+
         # 使用 OpenCV 进行模板匹配（优先）
         location = self._cv2_locate(image_path, search_img, confidence)
         if location:
@@ -1605,16 +1574,19 @@ class MusicSearcherApp(QtWidgets.QWidget):
             center_x = offset_x + location[0]
             center_y = offset_y + location[1]
             result = QtCore.QPoint(int(center_x), int(center_y))
-            self.location_cache[image_path] = (int(center_x), int(center_y))
-            
-<<<<<<< HEAD
-=======
+            self._cache_region(
+                image_path,
+                center_x - tpl_width / 2,
+                center_y - tpl_height / 2,
+                tpl_width,
+                tpl_height
+            )
+
             # 更新预览窗口
             if show_preview:
                 box = (int(center_x - tpl_width / 2), int(center_y - tpl_height / 2), tpl_width, tpl_height)
                 self._update_preview_box(box, image_path)
-            
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+
             # 调试输出
             try:
                 ts = time.strftime("%H:%M:%S")
@@ -1631,24 +1603,40 @@ class MusicSearcherApp(QtWidgets.QWidget):
                 center_x = offset_x + box.left + box.width / 2
                 center_y = offset_y + box.top + box.height / 2
                 result = QtCore.QPoint(int(center_x), int(center_y))
-                self.location_cache[image_path] = (int(center_x), int(center_y))
-<<<<<<< HEAD
-=======
+                self._cache_region(
+                    image_path,
+                    offset_x + box.left,
+                    offset_y + box.top,
+                    box.width,
+                    box.height
+                )
                 if show_preview:
-                    self._update_preview_box(box, image_path)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+                    screen_box = (offset_x + box.left, offset_y + box.top, box.width, box.height)
+                    self._update_preview_box(screen_box, image_path)
                 return result
         except:
             pass
         
-<<<<<<< HEAD
-        return None
-=======
         if show_preview:
             self.preview_window.clear_target()
         
         return None
-    
+
+    def _cache_region(self, image_path, left, top, width, height, padding=10):
+        left = max(0, int(left - padding))
+        top = max(0, int(top - padding))
+        width = max(1, int(width + padding * 2))
+        height = max(1, int(height + padding * 2))
+        try:
+            screen_w, screen_h = pyautogui.size()
+            if left >= screen_w or top >= screen_h:
+                return
+            width = max(1, min(width, screen_w - left))
+            height = max(1, min(height, screen_h - top))
+        except Exception:
+            pass
+        self.location_cache[image_path] = (left, top, width, height)
+
     def _update_preview_box(self, box, label_text=""):
         """
         更新预览窗口的框选显示
@@ -1662,7 +1650,22 @@ class MusicSearcherApp(QtWidgets.QWidget):
         
         label = os.path.basename(label_text) if label_text else ""
         self.preview_window.update_target(rect, label)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
+
+    def _cv2_read_gray(self, image_path, cv2_mod):
+        if not os.path.exists(image_path):
+            return None
+        try:
+            data = np.fromfile(image_path, dtype=np.uint8)
+            if data.size:
+                img = cv2_mod.imdecode(data, cv2_mod.IMREAD_GRAYSCALE)
+                if img is not None:
+                    return img
+        except Exception:
+            pass
+        try:
+            return cv2_mod.imread(image_path, cv2_mod.IMREAD_GRAYSCALE)
+        except Exception:
+            return None
 
     def _cv2_locate(self, image_path, haystack_img, confidence=0.8):
         """
@@ -1680,7 +1683,7 @@ class MusicSearcherApp(QtWidgets.QWidget):
                 hay_gray = hay_np
             
             # 读取模板
-            tpl_gray = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+            tpl_gray = self._cv2_read_gray(image_path, cv2)
             if tpl_gray is None:
                 return None
             
@@ -1708,18 +1711,11 @@ class MusicSearcherApp(QtWidgets.QWidget):
                 pass
         return None
 
-<<<<<<< HEAD
-    def find_and_operate_image_stabilized(self, image_path, action="click", confidence=None, max_wait=3.0, region=None, stabilize_count=2):
-        """
-        稳定的图像查找和操作（带稳定性验证）
-        优化：减少等待时间，添加视觉反馈
-=======
     def find_and_operate_image_stabilized(self, image_path, action="click", confidence=None, max_wait=3.0, region=None, stabilize_count=2, show_preview=False):
         """
         稳定的图像查找和操作（带稳定性验证）
         优化：减少等待时间，添加视觉反馈
         :param show_preview: 是否显示预览窗口
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
         """
         if confidence is None:
             confidence = AppConfig.IMAGE_CONFIDENCE
@@ -1739,19 +1735,12 @@ class MusicSearcherApp(QtWidgets.QWidget):
         
         while time.time() - start_time < max_wait:
             if self.stop_event.is_set():
-<<<<<<< HEAD
-                return None
-            
-            # 快速查找（不使用缓存验证，直接搜索）
-            location = self._smart_locate_image(image_path, confidence=confidence, region=region, use_cache=False)
-=======
                 if show_preview:
                     self.preview_window.clear_target()
                 return None
             
             # 快速查找（不使用缓存验证，直接搜索）
             location = self._smart_locate_image(image_path, confidence=confidence, region=region, use_cache=False, show_preview=show_preview)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
             
             if location:
                 curr_pos = (int(location.x()), int(location.y()))
@@ -1782,14 +1771,11 @@ class MusicSearcherApp(QtWidgets.QWidget):
                     
                     # 执行操作
                     self._perform_action(location, action)
-<<<<<<< HEAD
-=======
                     
                     # 操作完成后清除预览
                     if show_preview:
                         self.preview_window.clear_target()
                     
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                     return location
             else:
                 consecutive_matches = 0
@@ -1797,22 +1783,20 @@ class MusicSearcherApp(QtWidgets.QWidget):
             
             # 缩短等待时间到 50ms
             if self._monitored_sleep(0.05):
+                if show_preview:
+                    self.preview_window.clear_target()
                 return None
         
+        if show_preview:
+            self.preview_window.clear_target()
+        
         return None
-
-<<<<<<< HEAD
-    def find_and_operate_image(self, image_path, action="click", confidence=None, retries=5, region=None, max_wait=6.0):
-        """
-        图像查找和操作（快速模式）
-        优化：使用 OpenCV 优先，添加红色框选反馈
-=======
+ 
     def find_and_operate_image(self, image_path, action="click", confidence=None, retries=5, region=None, max_wait=6.0, show_preview=False):
         """
         图像查找和操作（快速模式）
         优化：使用 OpenCV 优先，添加红色框选反馈
         :param show_preview: 是否显示预览窗口
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
         """
         if confidence is None:
             confidence = AppConfig.IMAGE_CONFIDENCE
@@ -1830,11 +1814,6 @@ class MusicSearcherApp(QtWidgets.QWidget):
         
         for i in range(retries):
             if self.stop_event.is_set():
-<<<<<<< HEAD
-                return None
-            
-            if max_wait is not None and time.time() - start_time >= max_wait:
-=======
                 if show_preview:
                     self.preview_window.clear_target()
                 return None
@@ -1842,16 +1821,11 @@ class MusicSearcherApp(QtWidgets.QWidget):
             if max_wait is not None and time.time() - start_time >= max_wait:
                 if show_preview:
                     self.preview_window.clear_target()
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                 return None
             
             try:
                 # 使用优化的查找方法
-<<<<<<< HEAD
-                location = self._smart_locate_image(image_path, confidence=confidence, region=region, use_cache=(i > 0))
-=======
                 location = self._smart_locate_image(image_path, confidence=confidence, region=region, use_cache=(i > 0), show_preview=show_preview)
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                 
                 if location:
                     try:
@@ -1863,14 +1837,11 @@ class MusicSearcherApp(QtWidgets.QWidget):
                     
                     # 执行操作
                     self._perform_action(location, action)
-<<<<<<< HEAD
-=======
                     
                     # 操作完成后清除预览
                     if show_preview:
                         self.preview_window.clear_target()
                     
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                     return location
                     
             except Exception:
@@ -1880,19 +1851,12 @@ class MusicSearcherApp(QtWidgets.QWidget):
                     print(f"[{ts}] locate/action exception: {img_name} action={action}", flush=True)
                 except:
                     pass
-<<<<<<< HEAD
-=======
                 if show_preview:
                     self.preview_window.clear_target()
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
                 return None
             
             # 缩短等待时间到 300ms
             if self._monitored_sleep(0.3):
-<<<<<<< HEAD
-                return None
-        
-=======
                 if show_preview:
                     self.preview_window.clear_target()
                 return None
@@ -1900,7 +1864,6 @@ class MusicSearcherApp(QtWidgets.QWidget):
         if show_preview:
             self.preview_window.clear_target()
         
->>>>>>> cc8c41e (Update: 2026-03-07 16:02:06)
         return None
 
     def _perform_action(self, location, action):
